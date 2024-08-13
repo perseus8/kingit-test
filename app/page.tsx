@@ -2,62 +2,45 @@
 
 import { useState, useEffect } from "react";
 import HotelList from "./components/HotelList";
-import Filters from "./components/Filters";
-import Sorting from "./components/Sorting";
+import FilterHeader from "./components/FilterHeader";
 import Pagination from "./components/Pagination";
+import { FilterSchema, HotelItemSchema } from "./types/types";
 
-interface Hotel {
-  id: string;
-  name: string;
-  country: string;
-  countryId: string;
-  city: string;
-  cityId: string;
-  price: number;
-  stars: number;
-  imageUrl?: string;
-}
-
-interface Filter {
-  id: string;
-  name: string;
-}
-
-const Page = () => {
-  const [hotels, setHotels] = useState<Hotel[]>([]);
-  const [filteredHotels, setFilteredHotels] = useState<Hotel[]>([]);
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const [totalPages, setTotalPages] = useState<number>(1);
-  const [countryIdFilter, setCountryIdFilter] = useState<string>("");
-  const [cityIdFilter, setCityIdFilter] = useState<string>("");
-  const [sortOption, setSortOption] = useState<string>("price");
-  const [priceSortOrder, setPriceSortOrder] = useState<"asc" | "desc">("asc");
-  const [starsSortOrder, setStarsSortOrder] = useState<"asc" | "desc">("asc");
-  const [countries, setCountries] = useState<Filter[]>([]);
-  const [cities, setCities] = useState<Filter[]>([]);
+const HotelsPage = () => {
+  const [hotelList, setHotelList] = useState<HotelItemSchema[]>([]);
+  const [filteredHotelList, setFilteredHotelList] = useState<HotelItemSchema[]>([]);
+  const [activePage, setActivePage] = useState<number>(1);
+  const [totalPageCount, setTotalPageCount] = useState<number>(1);
+  const [filterByCountryId, setFilterByCountryId] = useState<string>("");
+  const [filterByCityId, setFilterByCityId] = useState<string>("");
+  const [selectedSortOption, setSelectedSortOption] = useState<string>("price");
+  const [sortOrderByPrice, setSortOrderByPrice] = useState<"asc" | "desc">("asc");
+  const [sortOrderByStars, setSortOrderByStars] = useState<"asc" | "desc">("asc");
+  const [availableCountryFilters, setAvailableCountryFilters] = useState<FilterSchema[]>([]);
+  const [availableCityFilters, setAvailableCityFilters] = useState<FilterSchema[]>([]);
   const [itemsPerPage, setItemsPerPage] = useState<number>(20);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [isDataLoading, setIsDataLoading] = useState<boolean>(false);
 
   useEffect(() => {
-    const fetchHotels = async () => {
-      setLoading(true);
+    const fetchHotelList = async () => {
+      setIsDataLoading(true);
       try {
-        const response = await fetch("/api/hotels");
-        const data: Hotel[] = await response.json();
-        setHotels(data);
-        updateFilters(data);
-        updatePagination(data);
+        const response = await fetch("/api/HotelLists");
+        const data: HotelItemSchema[] = await response.json();
+        setHotelList(data);
+        updateFilterOptions(data);
+        updatePaginationData(data);
       } catch (error) {
         console.error("Failed to fetch hotels:", error);
       } finally {
-        setLoading(false);
+        setIsDataLoading(false);
       }
     };
 
-    fetchHotels();
+    fetchHotelList();
   }, [itemsPerPage]);
 
-  const updateFilters = (data: Hotel[]) => {
+  const updateFilterOptions = (data: HotelItemSchema[]) => {
     const countries = Array.from(
       new Map(data.map((hotel) => [hotel.countryId, hotel.country])).entries()
     ).map(([id, name]) => ({ id, name }));
@@ -66,49 +49,49 @@ const Page = () => {
       new Map(data.map((hotel) => [hotel.cityId, hotel.city])).entries()
     ).map(([id, name]) => ({ id, name }));
 
-    setCountries(countries);
-    setCities(cities);
+    setAvailableCountryFilters(countries);
+    setAvailableCityFilters(cities);
   };
 
-  const updatePagination = (data: Hotel[]) => {
-    setFilteredHotels(data);
-    setTotalPages(Math.ceil(data.length / itemsPerPage));
-    setCurrentPage(1);
+  const updatePaginationData = (data: HotelItemSchema[]) => {
+    setFilteredHotelList(data);
+    setTotalPageCount(Math.ceil(data.length / itemsPerPage));
+    setActivePage(1);
   };
 
   useEffect(() => {
-    let updatedHotels = hotels.filter((hotel) =>
-      (!countryIdFilter || hotel.countryId === countryIdFilter) &&
-      (!cityIdFilter || hotel.cityId === cityIdFilter)
+    let updatedHotelList = hotelList.filter((hotel) =>
+      (!filterByCountryId || hotel.countryId === filterByCountryId) &&
+      (!filterByCityId || hotel.cityId === filterByCityId)
     );
 
-    updatedHotels.sort((a, b) => {
-      if (sortOption === "price") {
-        return priceSortOrder === "asc" ? a.price - b.price : b.price - a.price;
-      } else if (sortOption === "stars") {
-        return starsSortOrder === "asc" ? a.stars - b.stars : b.stars - a.stars;
+    updatedHotelList.sort((a, b) => {
+      if (selectedSortOption === "price") {
+        return sortOrderByPrice === "asc" ? a.price - b.price : b.price - a.price;
+      } else if (selectedSortOption === "stars") {
+        return sortOrderByStars === "asc" ? a.stars - b.stars : b.stars - a.stars;
       }
       return 0;
     });
 
-    setFilteredHotels(updatedHotels);
-    setTotalPages(Math.ceil(updatedHotels.length / itemsPerPage));
-    setCurrentPage(1);
-  }, [countryIdFilter, cityIdFilter, sortOption, priceSortOrder, starsSortOrder, hotels, itemsPerPage]);
+    setFilteredHotelList(updatedHotelList);
+    setTotalPageCount(Math.ceil(updatedHotelList.length / itemsPerPage));
+    setActivePage(1);
+  }, [filterByCountryId, filterByCityId, selectedSortOption, sortOrderByPrice, sortOrderByStars, hotelList, itemsPerPage]);
 
-  const handlePageChange = (page: number) => setCurrentPage(page);
+  const handlePageChange = (page: number) => setActivePage(page);
 
   const handleFilterChange = (countryId: string, cityId: string) => {
-    setCountryIdFilter(countryId);
-    setCityIdFilter(cityId);
+    setFilterByCountryId(countryId);
+    setFilterByCityId(cityId);
   };
 
   const handleSortChange = (sortBy: string) => {
-    setSortOption(sortBy);
+    setSelectedSortOption(sortBy);
     if (sortBy === "price") {
-      setPriceSortOrder((prevOrder) => (prevOrder === "asc" ? "desc" : "asc"));
+      setSortOrderByPrice((prevOrder) => (prevOrder === "asc" ? "desc" : "asc"));
     } else if (sortBy === "stars") {
-      setStarsSortOrder((prevOrder) => (prevOrder === "asc" ? "desc" : "asc"));
+      setSortOrderByStars((prevOrder) => (prevOrder === "asc" ? "desc" : "asc"));
     }
   };
 
@@ -116,9 +99,9 @@ const Page = () => {
     setItemsPerPage(parseInt(e.target.value, 10));
   };
 
-  const paginatedHotels = filteredHotels.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
+  const paginatedHotelList = filteredHotelList.slice(
+    (activePage - 1) * itemsPerPage,
+    activePage * itemsPerPage
   );
 
   const placeholders = Array.from({ length: itemsPerPage }, (_, index) => ({
@@ -135,42 +118,25 @@ const Page = () => {
 
   return (
     <div className="container mx-auto p-4">
-      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mx-8 gap-4 w-full">
-        <div className="flex flex-grow lg:gap-6 gap-4 items-center">
-          <Filters
-            countries={countries}
-            cities={cities}
-            onFilterChange={handleFilterChange}
-            disabled={loading}
-          />
-          <Sorting
-            onSortChange={handleSortChange}
-            priceSortOrder={priceSortOrder}
-            starsSortOrder={starsSortOrder}
-            disabled={loading}
-          />
-          <select
-            id="itemsPerPage"
-            value={itemsPerPage}
-            onChange={handleItemsPerPageChange}
-            className="border border-gray-300 rounded-lg p-2 bg-white text-gray-800 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out mx-12 -mt-0.5"
-            disabled={loading}
-          > 
-            <option value={10}>10</option>
-            <option value={20}>20</option>
-            <option value={40}>40</option>
-            <option value={100}>100</option>
-          </select>
-        </div>
-      </div>
-      <HotelList hotels={paginatedHotels.length ? paginatedHotels : placeholders} />
+      <FilterHeader
+        countries={availableCountryFilters}
+        cities={availableCityFilters}
+        onFilterChange={handleFilterChange}
+        onSortChange={handleSortChange}
+        priceSortOrder={sortOrderByPrice}
+        starsSortOrder={sortOrderByStars}
+        itemsPerPage={itemsPerPage}
+        onItemsPerPageChange={handleItemsPerPageChange}
+        loading={isDataLoading}
+      />
+      <HotelList HotelLists={paginatedHotelList.length ? paginatedHotelList : placeholders} />
       <Pagination
-        currentPage={currentPage}
-        totalPages={totalPages}
+        currentPage={activePage}
+        totalPages={totalPageCount}
         onPageChange={handlePageChange}
       />
     </div>
   );
 };
 
-export default Page;
+export default HotelsPage;

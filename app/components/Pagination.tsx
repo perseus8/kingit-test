@@ -1,24 +1,19 @@
-import React from 'react';
-import { Pagination as MuiPagination, Stack, Box } from '@mui/material';
-
-interface PaginationProps {
-  currentPage: number;
-  totalPages: number;
-  onPageChange: (page: number) => void;
-}
+import React from "react";
+import { Pagination as MuiPagination, Stack, Box } from "@mui/material";
+import { PaginationProps } from "../types/types";
 
 const Pagination: React.FC<PaginationProps & { disabled?: boolean }> = ({
   currentPage,
   totalPages,
   onPageChange,
-  disabled
+  disabled,
 }) => {
   return (
     <Box
       sx={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
         mt: 4,
         py: 2,
         px: 3,
@@ -33,12 +28,12 @@ const Pagination: React.FC<PaginationProps & { disabled?: boolean }> = ({
           disabled={disabled}
           shape="rounded"
           sx={{
-            '& .MuiPaginationItem-root': {
+            "& .MuiPaginationItem-root": {
               borderRadius: 1,
             },
-            '& .Mui-selected': {
-              bgcolor: 'primary.main',
-              color: 'white',
+            "& .Mui-selected": {
+              bgcolor: "primary.main",
+              color: "white",
             },
           }}
         />

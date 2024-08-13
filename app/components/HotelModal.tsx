@@ -1,14 +1,9 @@
 import React from 'react';
 import { Modal, Box, Typography, Button } from '@mui/material';
-import { Hotel } from './HotelItem'; // Ensure the Hotel type is exported and used correctly
+import { HotelModalProps } from '../types/types';
 
-interface HotelModalProps {
-  open: boolean;
-  onClose: () => void;
-  hotel: Hotel;
-}
 
-const HotelModal: React.FC<HotelModalProps> = ({ open, onClose, hotel }) => {
+const HotelModal: React.FC<HotelModalProps> = ({ open, onClose, selectedHotel }) => {
   return (
     <Modal
       open={open}
@@ -39,10 +34,10 @@ const HotelModal: React.FC<HotelModalProps> = ({ open, onClose, hotel }) => {
             mb: 3,
           }}
         >
-          {hotel.imageUrl ? (
+          {selectedHotel.imageUrl ? (
             <img
-              src={hotel.imageUrl}
-              alt={hotel.name}
+              src={selectedHotel.imageUrl}
+              alt={selectedHotel.name}
               style={{
                 width: '100%',
                 height: 'auto',
@@ -69,20 +64,20 @@ const HotelModal: React.FC<HotelModalProps> = ({ open, onClose, hotel }) => {
             </Box>
           )}
           <Typography variant="h6" component="div" fontWeight="bold" gutterBottom>
-            {hotel.name}
+            {selectedHotel.name}
           </Typography>
           <Typography variant="body1" color="textSecondary">
-            {hotel.city}, {hotel.country}
+            {selectedHotel.city}, {selectedHotel.country}
           </Typography>
           <Typography variant="h6" color="primary" fontWeight="bold" mt={2}>
-            €{hotel.price}
+            €{selectedHotel.price}
           </Typography>
           <Box display="flex" alignItems="center" mt={1}>
             {[...Array(5)].map((_, index) => (
               <Box
                 key={index}
                 sx={{
-                  color: index < hotel.stars ? 'warning.main' : 'grey.400',
+                  color: index < selectedHotel.stars ? 'warning.main' : 'grey.400',
                   fontSize: 20,
                 }}
               >

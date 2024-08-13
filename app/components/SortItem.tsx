@@ -1,14 +1,10 @@
 import React from 'react';
 import { Button, ButtonGroup, Typography, IconButton, Tooltip } from '@mui/material';
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
+import { SortItemProps } from '../types/types';
 
-interface SortingProps {
-  onSortChange: (sortBy: string) => void;
-  priceSortOrder: 'asc' | 'desc';
-  starsSortOrder: 'asc' | 'desc';
-}
 
-const Sorting: React.FC<SortingProps & { disabled?: boolean }> = ({ onSortChange, priceSortOrder, starsSortOrder, disabled }) => {
+const SortItem: React.FC<SortItemProps & { disabled?: boolean }> = ({ onSortChange, priceSortOrder, starsSortOrder, disabled }) => {
   return (
     <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between w-full mb-4">
       {/* <Typography variant="h6" component="div" className="mb-2 lg:mb-0">
@@ -44,4 +40,4 @@ const Sorting: React.FC<SortingProps & { disabled?: boolean }> = ({ onSortChange
   );
 };
 
-export default Sorting;
+export default SortItem;

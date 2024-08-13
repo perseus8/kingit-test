@@ -1,17 +1,5 @@
-import mongoose, { Schema, Document } from 'mongoose';
-
-export interface IHotel extends Document {
-  id: string;
-  name: string;
-  country: string;
-  countryId: string;
-  city: string;
-  cityId: string;
-  price: number;
-  stars: number;
-  imageUrl?: string;
-  cachedAt: Date;
-}
+import mongoose, { Schema, Document } from "mongoose";
+import { IHotelListing } from "../types/types";
 
 const HotelSchema: Schema = new Schema({
   id: { type: String, required: true },
@@ -23,9 +11,10 @@ const HotelSchema: Schema = new Schema({
   price: { type: Number, required: true },
   stars: { type: Number, required: true },
   imageUrl: { type: String },
-  cachedAt: { type: Date, default: Date.now, expires: '20m' },
+  cachedAt: { type: Date, default: Date.now, expires: "20m" },
 });
 
 HotelSchema.index({ cachedAt: 1 }, { expireAfterSeconds: 20 * 60 });
 
-export default mongoose.models.Hotel || mongoose.model<IHotel>('Hotel', HotelSchema);
+export default mongoose.models.Hotel ||
+  mongoose.model<IHotelListing>("Hotel", HotelSchema);

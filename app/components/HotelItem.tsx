@@ -2,23 +2,10 @@ import React from 'react';
 import { Card, CardContent, CardMedia, Typography, Box, IconButton } from '@mui/material';
 import { Star as StarIcon } from '@mui/icons-material';
 import { Info as InfoIcon } from '@mui/icons-material';
+import { HotelItemProps } from '../types/types';
 
-export interface Hotel {
-  id: string;
-  name: string;
-  country: string;
-  city: string;
-  price: number;
-  stars: number;
-  imageUrl?: string;
-}
 
-interface HotelItemProps {
-  hotel: Hotel;
-  onClick: () => void; // onClick prop
-}
-
-const HotelItem: React.FC<HotelItemProps> = ({ hotel, onClick }) => {
+const HotelItem: React.FC<HotelItemProps> = ({ HotelItem, onClick }) => {
   return (
     <Card
       sx={{
@@ -38,12 +25,12 @@ const HotelItem: React.FC<HotelItemProps> = ({ hotel, onClick }) => {
       }}
       onClick={onClick}
     >
-      {hotel.imageUrl ? (
+      {HotelItem.imageUrl ? (
         <CardMedia
           component="img"
           height="180"
-          image={hotel.imageUrl}
-          alt={hotel.name}
+          image={HotelItem.imageUrl}
+          alt={HotelItem.name}
           sx={{
             objectFit: 'cover',
             width: '100%',
@@ -78,22 +65,22 @@ const HotelItem: React.FC<HotelItemProps> = ({ hotel, onClick }) => {
         }}
       >
         <Typography variant="h6" component="div" fontWeight="bold" gutterBottom>
-          {hotel.name}
+          {HotelItem.name}
         </Typography>
         <Typography variant="body2" color="textSecondary">
-          {hotel.city}, {hotel.country}
+          {HotelItem.city}, {HotelItem.country}
         </Typography>
         <Box sx={{ mt: 'auto' }}>
           <Box display="flex" justifyContent="space-between" alignItems="center">
             <Typography variant="h6" color="primary" fontWeight="bold">
-              €{hotel.price}
+              €{HotelItem.price}
             </Typography>
             <Box display="flex" alignItems="center">
               {Array.from({ length: 5 }).map((_, index) => (
                 <StarIcon
                   key={index}
                   sx={{
-                    color: index < hotel.stars ? 'warning.main' : 'grey.400',
+                    color: index < HotelItem.stars ? 'warning.main' : 'grey.400',
                     fontSize: 20,
                   }}
                 />
