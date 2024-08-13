@@ -1,4 +1,4 @@
-# King It Test
+# King IT Test
 
 This is a Next.js application for displaying hotel offers, containerized using Docker.
 
@@ -28,7 +28,3 @@ To run the application locally using Docker Compose, follow these steps:
    ```
 
 4. To stop the application, you can press `CTRL+C`.
-
-## Environment Variables
-
-Make sure to set up the necessary environment variables in your `docker-compose.yml` or through an `.env` file as needed for your application to run correctly.
